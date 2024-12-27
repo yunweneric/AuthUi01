@@ -1,8 +1,14 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_openui/utils/sizing.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class OnBoardingData {
+  final String title;
+  final String description;
+
+  OnBoardingData({required this.title, required this.description});
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,78 +17,127 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
-  late AnimationController controller;
-  late Animation<double> fadeTextAnimation;
+class _HomeScreenState extends State<HomeScreen> {
+  final PageController _controller = PageController();
+  int activeIndex = 0;
 
-  @override
-  void initState() {
-    controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 700),
-    );
-
-    fadeTextAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: Curves.easeOut,
-      ),
-    );
-
-    Future.delayed(Duration(milliseconds: 700), () => controller.forward());
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  List<OnBoardingData> data = [
+    OnBoardingData(
+      title: "Welcome to Stuff",
+      description: "I provide essential stuff for your ui designs every tuesday!",
+    ),
+    OnBoardingData(
+      title: "Design Template uploads Every Tuesday!",
+      description: "Make sure to take a look my uplab profile every tuesday",
+    ),
+    OnBoardingData(
+      title: "Download now!",
+      description: "You can follow me if you wantand comment on any to get some freebies",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<int> items = List.generate(13, (item) => item);
     return Scaffold(
-      body: Transform.rotate(
-        angle: 0.5 * pi,
-        child: AnimatedBuilder(
-            animation: controller,
-            builder: (context, val) {
-              return Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()..scale(1.0),
-                child: Opacity(
-                  opacity: fadeTextAnimation.value,
-                  child: ListWheelScrollView(
-                    controller: ScrollController(initialScrollOffset: 200),
-                    perspective: 0.009,
-                    itemExtent: AppSizing.height(context) * 0.15,
-                    children: items.map(
-                      (index) {
-                        return GestureDetector(
-                          onTap: () async {},
-                          child: Transform.rotate(
-                            angle: -0.5 * pi,
-                            child: Hero(
-                              tag: index,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset(
-                                  "assets/images/image_${index}.jpg",
-                                  fit: BoxFit.cover,
-                                  width: AppSizing.width(context) * 0.3,
-                                ),
-                              ),
-                            ),
+      body: Column(
+        children: [
+          AppSizing.khSpacer(context, 0.2),
+          SizedBox(
+            height: AppSizing.height(context) * 0.8,
+            width: AppSizing.width(context),
+            child: PageView.builder(
+              itemCount: data.length,
+              controller: _controller,
+              onPageChanged: (page) {
+                setState(() {
+                  activeIndex = page;
+                });
+              },
+              itemBuilder: (c, i) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Column(
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/onboarding_${i + 1}.svg",
+                        height: AppSizing.height(context) * 0.5,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            data[i].title,
+                            style: Theme.of(context).textTheme.displayMedium,
+                            textAlign: TextAlign.center,
                           ),
-                        );
-                      },
-                    ).toList(),
+                          AppSizing.k20(context),
+                          Text(
+                            data[i].description,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          AppSizing.k20(context),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    _controller.animateToPage(
+                      3,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.linear,
+                    );
+                  },
+                  child: const Text(
+                    "Skip",
+                    style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w400),
                   ),
                 ),
-              );
-            }),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ...List.generate(data.length, (i) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 500),
+                          margin: const EdgeInsets.only(right: 10),
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: i == activeIndex ? Colors.black : Colors.grey,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        );
+                      })
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _controller.animateToPage(
+                      activeIndex + 1,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.linear,
+                    );
+                  },
+                  child: const Text(
+                    "Next",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
