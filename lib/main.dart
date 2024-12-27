@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
         textTheme: TextTheme(
-          displayMedium: GoogleFonts.lato(fontSize: 28, fontWeight: FontWeight.w800),
-          bodyMedium: GoogleFonts.lato(fontSize: 16),
+          displayMedium: GoogleFonts.dmSans(fontSize: 28, fontWeight: FontWeight.w800),
+          bodyMedium: GoogleFonts.dmSans(fontSize: 16),
         ),
       ),
       home: HomeScreen(),
