@@ -19,11 +19,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
         textTheme: TextTheme(
-          displayMedium: GoogleFonts.dmSans(fontSize: 24, fontWeight: FontWeight.w800),
-          bodyMedium: GoogleFonts.dmSans(fontSize: 14),
+          displayMedium: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w800),
+          bodyMedium: GoogleFonts.inter(fontSize: 14),
         ),
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
